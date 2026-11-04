@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SENTINEL — Roblox Intelligence Terminal</title>
+<meta name="description" content="Монохромный терминал разведки Roblox: профили, друзья, игры, серверы, субплейсы, модерация и связи с Discord.">
+<meta name="google" content="notranslate">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RoboTrace">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Cpath d='M16 4v24M5.6 10l20.8 12M5.6 22l20.8-12' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0b;--pn:#111;--ln:#2b2b2b;--tx:#e8e8e8;--mu:#777;--ac:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:13px/1.5 'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+a{color:inherit}
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;border-bottom:1px solid var(--ln);position:sticky;top:0;background:var(--bg);z-index:5;flex-wrap:wrap}
+.logo{font-weight:700;letter-spacing:.2em;text-decoration:none;display:flex;align-items:center;gap:8px}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav a{padding:6px 12px;border:1px solid transparent;text-decoration:none;color:var(--mu);letter-spacing:.15em;font-size:11px}
+nav a.on,nav a:hover{color:var(--ac);border-color:var(--ln)}
+#cfg{margin-left:auto}
+main{max-width:1240px;margin:0 auto;padding:24px}
+.p{position:relative;border:1px solid var(--ln);background:var(--pn);margin-bottom:20px}
+.p:before,.p:after{content:"";position:absolute;width:9px;height:9px;border:1px solid var(--ac)}
+.p:before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.p:after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.p>h3{margin:0;padding:16px 20px 0;font-size:11px;letter-spacing:.3em;font-weight:500;color:var(--mu);text-transform:uppercase}
+.p>small{display:block;padding:2px 20px 12px;color:var(--mu);border-bottom:1px solid var(--ln)}
+.pb{padding:16px 20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.mod{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:20px;align-items:start}
+@media(max-width:860px){.g2,.mod{grid-template-columns:1fr}}
+.bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.bar label{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:11px}
+input,select{flex:1;min-width:120px;background:#0a0a0a;border:1px solid var(--ln);color:var(--tx);padding:11px 13px;font:inherit;outline:0}
+input[type=number]{max-width:90px;min-width:70px;flex:none}
+input[type=checkbox]{flex:none;min-width:0}
+input:focus,select:focus{border-color:#666}
+button,.btn{background:none;border:1px solid var(--ln);color:var(--tx);padding:9px 14px;font:inherit;font-size:11px;letter-spacing:.15em;cursor:pointer;text-transform:uppercase;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{border-color:var(--ac)}
+button:disabled{opacity:.4}
+.sm{padding:4px 8px;font-size:10px;letter-spacing:.1em}
+.r{display:flex;justify-content:space-between;gap:16px;padding:6px 0;color:var(--mu)}
+.r b{color:var(--tx);font-weight:500;text-align:right;word-break:break-all}
+.msg{color:var(--mu);padding:8px 0}.err{color:#ff6b6b}.ok{color:#7dff9b}
+.lbl{font-size:11px;letter-spacing:.3em;color:var(--mu);margin:0 0 8px}
+.big{font-size:34px;font-weight:700}
+.rate{height:6px;background:#222;margin:14px 0 6px}.rate i{display:block;height:100%;background:#fff}
+.desc{white-space:pre-wrap;color:#cfcfcf;max-height:260px;overflow:auto}
+.av{display:flex;gap:20px;flex-wrap:wrap}.av img{width:200px;height:200px;background:#1a1a1a;object-fit:cover}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.card{border:1px solid var(--ln);padding:8px;text-align:center;overflow:hidden}
+.card:hover{border-color:var(--ac)}.card img{width:100%;aspect-ratio:1;background:#1a1a1a;cursor:pointer}
+.card span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.card button{margin-top:6px;width:100%}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;letter-spacing:.25em;color:var(--mu);text-align:left;font-weight:500;padding:10px 14px;border-bottom:1px solid var(--ln);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid #1a1a1a;vertical-align:middle}
+.tag{border:1px solid var(--ln);padding:2px 8px;font-size:11px;margin:2px;display:inline-block;cursor:pointer}
+canvas{width:100%;height:460px;background:#0a0a0a;display:block}
+.hit td{background:#222}
+.sp{background:#0a0a0a;border:1px solid var(--ln);height:150px;position:relative;margin:12px 0}.sp svg{width:100%;height:100%;display:block}
+.spl{position:absolute;right:6px;font-size:10px;color:var(--mu);font-style:normal}.spl.t{top:3px}.spl.b{bottom:3px}
+button.on{background:#fff;color:#000;border-color:#fff}
+.p>small:not(#scnt),.msg[style*="font-size:11px"]:not(.err):not(#sprog),#avd{display:none}
+#scnt{color:var(--tx);font-size:12px}.p>h3{color:#fff;font-size:12px}.p>h3+.pb{padding-top:12px}
+.clk{cursor:pointer}.clk:hover td{background:#181818}
+.avs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px;max-width:360px}
+.avs img,.avs i{width:30px;height:30px;background:#1a1a1a;display:block}
+.avs img.me{outline:2px solid #fff}
+.jid{font-size:11px;word-break:break-all;color:#cfcfcf}
+.ico{width:44px;height:44px;background:#1a1a1a;display:block}
+.verdict{font-size:20px;font-weight:700;letter-spacing:.1em;padding:14px;border:1px solid var(--ln);text-align:center;margin-bottom:14px}
+.verdict.bad{border-color:#ff6b6b;color:#ff6b6b}.verdict.good{border-color:#7dff9b;color:#7dff9b}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:8px 16px;display:none;z-index:9;font-size:12px}
+h2.t{letter-spacing:.1em;margin:0 0 14px;font-size:20px}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#/profile"><svg width="20" height="20" viewBox="0 0 32 32"><path d="M16 4v24M5.6 10l20.8 12M5.6 22l20.8-12" stroke="#fff" stroke-width="3"/></svg>RoboTrace</a>
+  <nav id="nav"></nav>
+  <button id="cfg" title="Настройка прокси">⚙ API</button>
+</header>
+<main id="app"></main>
+<div id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls = {
+  g:(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},
+  s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+};
+const fmt = n => n==null ? '—' : Number(n).toLocaleString('ru-RU');
+const dt = s => s ? new Date(s).toLocaleDateString('ru-RU') : '—';
+const panel = (t,sub,body) => `<section class="p"><h3>${t}</h3>${sub?`<small>${sub}</small>`:''}<div class="pb">${body}</div></section>`;
+const row = (k,v) => `<div class="r"><span>${k}</span><b>${v}</b></div>`;
+const val = (r,f,d='—') => r.status==='fulfilled' ? f(r.value) : d;
+const post = body => ({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- Firebase Realtime Database (REST): история онлайна, журнал банов, обнаружения игроков ---------- */
+const DB = 'https://robotrace-d4230-default-rtdb.firebaseio.com';
+async function dbReq(path, method, body, q=''){
+  const ac = new AbortController(), tm = setTimeout(()=>ac.abort(), 6000);
+  try{
+    const r = await fetch(`${DB}/${path}.json${q}`, {method, signal:ac.signal, body: body===undefined ? undefined : JSON.stringify(body)});
+    if (!r.ok) throw new Error('DB HTTP '+r.status);
+    return await r.json();
+  } finally { clearTimeout(tm); }
+}
+const dbGet = (p,q) => dbReq(p,'GET',undefined,q);
+const dbPush = (p,v) => dbReq(p,'POST',v).catch(()=>null);
+const errBox = (el,m) => { el.innerHTML = `<div class="msg err">Ошибка: ${esc(m)}</div><button onclick="route()">Повторить</button>`; };
+async function retry(fn, n){ for (let i=0;;i++){ try{ return await fn(); }catch(e){ if (i>=n-1) throw e; await sleep(1200*(i+1)); } } }
+const joinUrl = (place, job) => `roblox://experiences/start?placeId=${place}${job?'&gameInstanceId='+job:''}`;
+function toast(t){ const e=$('#toast'); e.textContent=t; e.style.display='block'; clearTimeout(toast.t); toast.t=setTimeout(()=>e.style.display='none',1500); }
+function cp(t){
+  const done=()=>toast('Скопировано');
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(done,()=>fb()); else fb();
+  function fb(){ const a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch{} a.remove(); done(); }
+}
+
+/* ---------- Сеть: перебор CORS-прокси, запоминаем рабочий ---------- */
+const CAND = [
+  (s,p) => `https://${s}.roproxy.com${p}`,
+  (s,p) => `https://${s}.rotunnel.com${p}`,
+  (s,p) => `https://corsproxy.io/?url=${encodeURIComponent(`https://${s}.roblox.com${p}`)}`,
+  (s,p) => `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://${s}.roblox.com${p}`)}`
+];
+let okIdx = 0;
+async function api(sub, path, o){ try{ return await api1(sub, path, o); }catch(e){ await sleep(1500); return api1(sub, path, o); } }
+async function api1(sub, path, o){
+  const full = `https://${sub}.roblox.com${path}`, c = [];
+  if (workerOn()) c.push(() => workerUrl(full));
+  CAND.forEach((f,ix) => { if (!(o && o.method==='POST' && ix===3)) c.push(() => f(sub,path)); });
+  let err;
+  for (let k=0;k<c.length;k++){
+    const i = (okIdx+k)%c.length;
+    try{
+      const r = await fetch(c[i](), {...o, headers:{'Accept-Language':'en-US,en;q=0.9', ...(o&&o.headers)}});
+      if (r.ok){ okIdx = i; return await r.json(); }
+      if (r.status===429) await sleep(1500);
+      err = new Error('HTTP '+r.status);
+    }catch(e){ err = e; }
+  }
+  throw new Error('не удалось достучаться до Roblox API ('+err.message+'). Нажмите «⚙ API» и укажите свой прокси.');
+}
+function workerOn(){ return !!ls.g('custom',''); }
+function workerUrl(full){
+  const w = ls.g('custom','');
+  if (!w) return full;
+  if (w.includes('{url}')) return w.replace('{url}', encodeURIComponent(full));
+  try{ const u = new URL(w); u.searchParams.set('url', full); return u.toString(); }catch{ return full; }
+}
+function closeCfg(){ const m=$('#mdl'); if (m) m.remove(); }
+function openCfg(){
+  closeCfg();
+  const d = document.createElement('div'); d.id = 'mdl';
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px';
+  d.innerHTML = `<div class="p" style="max-width:560px;width:100%;margin:0"><h3>ВОРКЕР (CORS-ПРОКСИ)</h3><small>Вставьте ссылку на свой Cloudflare Worker — этого достаточно</small>
+    <div class="pb"><input id="wk" placeholder="https://имя.аккаунт.workers.dev" style="width:100%;margin-bottom:12px" value="${esc(ls.g('custom',''))}">
+    <div class="bar"><button onclick="saveCfg()">Сохранить</button><button onclick="testCfg()">Проверить</button><button onclick="closeCfg()">Закрыть</button></div><div id="wkr" class="msg"></div></div></div>`;
+  document.body.appendChild(d);
+}
+function saveCfg(){ ls.s('custom', $('#wk').value.trim()); closeCfg(); toast('Сохранено'); route(); }
+async function testCfg(){
+  const o = $('#wkr'); ls.s('custom', $('#wk').value.trim()); o.textContent = 'проверяю…';
+  try{
+    const r = await fetch(workerUrl('https://users.roblox.com/v1/users/1'));
+    const j = await r.json();
+    o.innerHTML = j.name ? `<span class="ok">Работает: получен игрок ${esc(j.name)}</span>` : `<span class="err">Ответ без данных: ${esc(JSON.stringify(j).slice(0,120))}</span>`;
+  }catch(e){ o.innerHTML = `<span class="err">Не работает: ${esc(e.message)}</span>`; }
+}
+$('#cfg').onclick = openCfg;
+
+async function resolveUser(q){
+  q = String(q||'').trim();
+  if (!q) throw new Error('Введите ник или ID');
+  if (/^\d+$/.test(q)) return api('users','/v1/users/'+q);
+  const r = await api('users','/v1/usernames/users', post({usernames:[q],excludeBannedUsers:false}));
+  if (!r.data[0]) throw new Error('Игрок не найден');
+  return api('users','/v1/users/'+r.data[0].id);
+}
+async function heads(ids){
+  const m = {};
+  for (let i=0;i<ids.length;i+=100){
+    try{
+      const r = await api('thumbnails',`/v1/users/avatar-headshot?userIds=${ids.slice(i,i+100).join()}&size=150x150&format=Png`);
+      (r.data||[]).forEach(d => m[d.targetId] = d.imageUrl);
+    }catch{}
+  }
+  return m;
+}
+async function headOf(id){
+  for (let i=0;i<5;i++){
+    const d = (await api('thumbnails',`/v1/users/avatar-headshot?userIds=${id}&size=150x150&format=Png&isCircular=false`)).data[0];
+    if (d && d.imageUrl) return d.imageUrl;
+    if (d && d.state==='Blocked') break;
+    await sleep(800);
+  }
+  throw new Error('Roblox не отдал аватарку игрока (Pending/Blocked)');
+}
+const placeToUniverse = async id => (await api('apis',`/universes/v1/places/${id}/universe`)).universeId;
+
+/* аватарки по токенам серверов; сравнение идёт по хэшу картинки в ссылке rbxcdn */
+const imgKey = u => { const m = /rbxcdn\.com\/(?:\w+-)?([0-9a-fA-F]{16,})/.exec(u||''); return m ? m[1].toLowerCase() : (u||''); };
+window.AVSTAT = {ok:0, empty:0, fail:0, last:'', state:''};
+const tokReq = t => ({requestId:t,type:'AvatarHeadshot',targetId:0,token:t,format:'png',size:'150x150',isCircular:false});
+async function tokBatch(c, cache, pend){
+  const r = await api('thumbnails','/v1/batch', post(c.map(tokReq)));
+  (r.data||[]).forEach((d,i) => {
+    const t = c.includes(d.requestId) ? d.requestId : c[i];
+    if (d.imageUrl){ cache[t] = d.imageUrl; AVSTAT.ok++; }
+    else { pend.push(t); AVSTAT.empty++; AVSTAT.state = d.state||''; }
+  });
+}
+async function tokAv(tokens, cache){
+  const need = [...new Set(tokens)].filter(t => !cache[t]), ch = [], pend = [];
+  for (let i=0;i<need.length;i+=100) ch.push(need.slice(i,i+100));
+  for (let i=0;i<ch.length;i+=2){
+    await Promise.all(ch.slice(i,i+2).map(c => tokBatch(c, cache, pend).catch(e => { AVSTAT.fail++; AVSTAT.last = e.message; })));
+  }
+  for (let r=0; r<3 && pend.length; r++){
+    await sleep(1200*(r+1)); const cur = pend.splice(0);
+    for (let i=0;i<cur.length;i+=100) await tokBatch(cur.slice(i,i+100), cache, pend).catch(()=>{});
+  }
+}
+
+/* ---------- Чарты Roblox (explore API) ---------- */
+const sess = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random());
+async function exploreSort(sortId, pages){
+  const sid = sess(), out = []; let tok = '';
+  for (let i=0;i<pages;i++){
+    const r = await api('apis',`/explore-api/v1/get-sort-content?sessionId=${sid}&sortId=${encodeURIComponent(sortId)}&device=computer&country=all&cpuCores=8&maxResolution=1920x1080&maxMemory=8192&networkType=4g${tok?'&pageToken='+encodeURIComponent(tok):''}`);
+    (r.games||[]).forEach(g => out.push(normGame(g)));
+    tok = r.nextPageToken; if (!tok) break;
+  }
+  return out;
+}
+async function omniSearch(q, pages){
+  const sid = sess(), out = []; let tok = '';
+  for (let i=0;i<pages;i++){
+    const r = await api('apis',`/search-api/omni-search?searchQuery=${encodeURIComponent(q)}&pageToken=${encodeURIComponent(tok)}&sessionId=${sid}&pageType=all`);
+    (r.searchResults||[]).forEach(sr => (sr.contents||[]).forEach(c => { if (c.universeId) out.push(normGame(c)); }));
+    tok = r.nextPageToken; if (!tok) break;
+  }
+  return out;
+}
+const normGame = c => ({u:c.universeId, n:c.name, on:c.playerCount ?? c.playing ?? 0, up:c.totalUpVotes ?? 0, dn:c.totalDownVotes ?? 0, pl:c.rootPlaceId, d:''});
+async function topGames(n){
+  const per = Math.ceil(n/20)+1;
+  return (await exploreSort('top-playing-now', Math.min(per,10))).slice(0,n);
+}
+
+/* ---------- Роутер и вкладки ---------- */
+const TABS = [['profile','ПРОФИЛИ'],['friends','ДРУЗЬЯ'],['mod','МОДЕРАЦИЯ'],['charts','CHARTS'],['game','ИГРА'],['blox','BLOXLINK'],['tools','ИНСТРУМЕНТЫ'],['market','МАРКЕТПЛЕЙС'],['fav','ИЗБРАННОЕ']];
+window.CUR = null; window.AUTO = false;
+function goto(tab, arg){
+  const h = `#/${tab}/${encodeURIComponent(arg||'')}`;
+  if (location.hash === h) route(); else location.hash = h;
+}
+function route(){
+  closeModal(); clearInterval(window.GT); if (window.SCAN) window.SCAN.abort();
+  const h = location.hash.replace(/^#\//,''), i = h.indexOf('/');
+  const tab = (i<0?h:h.slice(0,i)) || 'profile', arg = decodeURIComponent(i<0?'':h.slice(i+1));
+  window.TABCUR = tab; $('#nav').innerHTML = TABS.map(([k,n]) => `<a href="#/${k}" class="${k===tab?'on':''}">${n}</a>`).join('');
+  ({profile:pgProfile,friends:pgFriends,mod:pgMod,charts:pgCharts,game:pgGame,blox:pgBlox,tools:pgTools,fav:pgFav,market:pgMarket}[tab] || pgProfile)(arg);
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange', route);
+
+async function userTab(tab, arg, render, root){
+  const q = arg || (CUR ? String(CUR.id) : '');
+  const R = root || $('#app');
+  R.innerHTML = (root ? '' : `<form class="bar" onsubmit="event.preventDefault();goto('${tab}',$('#q').value.trim())"><input id="q" placeholder="Ник или Roblox ID" autocomplete="off" value="${esc(arg || CUR?.name || '')}"><button>Найти</button></form>`) + '<div id="out"></div>';
+  const out = R.querySelector('#out');
+  if (!q){
+    out.innerHTML = panel('ИГРОК','','<div class="msg"><a class="tag" onclick="goto(\''+tab+'\',\'Roblox\')">Roblox</a><a class="tag" onclick="goto(\''+tab+'\',\'Builderman\')">Builderman</a></div>');
+    return;
+  }
+  out.innerHTML = '<div class="msg">загрузка…</div>';
+  try{
+    const same = CUR && (String(CUR.id)===q || CUR.name.toLowerCase()===q.toLowerCase());
+    const u = same ? CUR : await resolveUser(q);
+    CUR = u; out.innerHTML = '';
+    await render(u, out);
+  }catch(e){ errBox(out, e.message); }
+}
+
+/* ---------- Профиль ---------- */
+async function pgProfile(arg, root){ userTab('profile', arg, async (u, out) => {
+  const id = u.id;
+  const [fc,fo,fi,gr,hi,av,gm] = await Promise.allSettled([
+    api('friends',`/v1/users/${id}/friends/count`),
+    api('friends',`/v1/users/${id}/followers/count`),
+    api('friends',`/v1/users/${id}/followings/count`),
+    api('groups',`/v2/users/${id}/groups/roles`),
+    api('users',`/v1/users/${id}/username-history?limit=10`),
+    api('thumbnails',`/v1/users/avatar?userIds=${id}&size=420x420&format=Png`),
+    api('games',`/v2/users/${id}/games?limit=10`)
+  ]);
+  const img = val(av,r=>r.data[0]?.imageUrl,'');
+  out.innerHTML = panel('ПРОФИЛЬ',esc(u.name),
+    `<div class="av"><img src="${esc(img)}" alt=""><div style="flex:1;min-width:240px">
+    ${row('ник',esc(u.name))}${row('отображаемое имя',esc(u.displayName))}${row('id',u.id)}
+    ${row('создан',dt(u.created))}${row('заблокирован Roblox',u.isBanned?'<span class="err">да</span>':'нет')}
+    ${row('друзья',val(fc,r=>fmt(r.count)))}${row('подписчики',val(fo,r=>fmt(r.count)))}${row('подписки',val(fi,r=>fmt(r.count)))}
+    <div style="margin-top:14px" class="bar"><button onclick="act('friends','${id}')">Друзья</button><button onclick="act('mod','${id}')">Модерация</button><button onclick="act('blox','${id}')">Bloxlink</button>
+    <button data-n="${esc(u.name)}" onclick="fav('p','${id}',this.dataset.n)">★ В избранное</button><a class="btn" target="_blank" rel="noopener" href="https://www.roblox.com/users/${id}/profile">Roblox ↗</a></div></div></div>`)+
+  panel('ГДЕ ИГРАЕТ','Присутствие без куки: ищем аватар игрока среди публичных серверов его игр, избранного и топа чартов',
+    `<div class="bar"><label>игр из топа <input type="number" id="scn" value="15" min="0" max="100"></label>
+     <label>страниц серверов на игру <input type="number" id="scp" value="2" min="1" max="10"></label>
+     <button id="sbtn" onclick="startScan(${id})">Искать</button><button onclick="window.SCAN&&SCAN.abort()">Стоп</button></div>
+     <div class="msg" id="sprog" style="font-size:11px"></div><div id="sres"></div><div id="sight"></div>`)+
+  panel('ОПИСАНИЕ','',`<div class="desc">${esc(u.description)||'—'}</div>`)+
+  `<div class="g2">`+
+  panel('ИСТОРИЯ НИКОВ','',val(hi,r=>r.data.map(x=>`<span class="tag">${esc(x.name)}</span>`).join('')||'—'))+
+  panel('ГРУППЫ','',val(gr,r=>r.data.map(x=>`<span class="tag">${esc(x.group.name)} · ${esc(x.role.name)}</span>`).join('')||'—'))+
+  `</div>`+
+  panel('ИГРЫ ИГРОКА','',val(gm,r=>r.data.map(x=>`<a class="tag" onclick="act('game','${x.rootPlace?.id}')">${esc(x.name)}</a>`).join('')||'—'));
+  loadSightings(id); loadExtra(id, out);
+  if (window.AUTO){ window.AUTO = false; startScan(id); }
+}, root);}
+
+async function scanGame(place, target, pages, sg){
+  let cursor = '';
+  for (let p=0;p<pages;p++){
+    if (sg.aborted) return null;
+    const r = await api('games',`/v1/games/${place}/servers/Public?limit=100${cursor?'&cursor='+encodeURIComponent(cursor):''}`);
+    const byTok = {}; r.data.forEach(s => (s.playerTokens||[]).forEach(t => byTok[t] = s));
+    const toks = Object.keys(byTok);
+    for (let i=0;i<toks.length;i+=100){
+      if (sg.aborted) return null;
+      const c = toks.slice(i,i+100);
+      const rr = await api('thumbnails','/v1/batch', post(c.map(tokReq))).catch(()=>({data:[]}));
+      const h = (rr.data||[]).find(d => d.imageUrl && imgKey(d.imageUrl) === imgKey(target));
+      if (h) return byTok[h.requestId];
+    }
+    cursor = r.nextPageCursor; if (!cursor) break;
+  }
+  return null;
+}
+async function startScan(uid){
+  if (window.SCAN) window.SCAN.abort();
+  const ac = window.SCAN = new AbortController(), sg = ac.signal, prog = $('#sprog'), res = $('#sres');
+  const n = +$('#scn').value || 0, pages = +$('#scp').value || 1;
+  res.innerHTML = ''; prog.textContent = 'собираю список игр…';
+  try{
+    const target = await headOf(uid);
+    const cand = new Map(), add = (p,nm) => { if (p && !cand.has(String(p))) cand.set(String(p), nm || p); };
+    const [mine,fav,top] = await Promise.allSettled([
+      api('games',`/v2/users/${uid}/games?limit=50`),
+      api('games',`/v2/users/${uid}/favorite/games?limit=50`),
+      n ? topGames(n) : Promise.resolve([])
+    ]);
+    if (mine.status==='fulfilled') mine.value.data.forEach(g => add(g.rootPlace?.id, g.name));
+    if (fav.status==='fulfilled') fav.value.data.forEach(g => add(g.rootPlace?.id, g.name));
+    if (top.status==='fulfilled') top.value.forEach(g => add(g.pl, g.n));
+    const list = [...cand], total = list.length; let done = 0, found = null;
+    await Promise.all([0,1,2].map(async () => {
+      while (!found && !sg.aborted && list.length){
+        const [pl,nm] = list.shift();
+        prog.textContent = `сканирую: ${nm} (${done}/${total})`;
+        const s = await scanGame(pl, target, pages, sg).catch(()=>null);
+        done++;
+        if (s && !found){ found = {pl,nm,s}; ac.abort(); }
+      }
+    }));
+    if (found){
+      prog.textContent = '';
+      dbPush('sightings/'+uid,{t:Date.now(),place:found.pl,job:found.s.id,name:found.nm}).then(()=>loadSightings(uid));
+      res.innerHTML = row('игра',esc(found.nm))+row('place id',found.pl)+row('job id',`<span class="jid">${esc(found.s.id)}</span>`)+row('игроков на сервере',`${found.s.playing}/${found.s.maxPlayers}`)+
+        `<div class="bar"><a class="btn" href="${joinUrl(found.pl,found.s.id)}">▷ Зайти на этот сервер</a><button onclick="cp('${found.s.id}')">Копировать Job ID</button><button onclick="act('game','${found.pl}')">Открыть игру</button></div>`;
+    } else {
+      prog.textContent = sg.aborted ? 'остановлено' : `не найден среди ${total} игр (проверено страниц серверов на игру: до ${pages}). Игрок не в игре, на приватном сервере или в другой игре.`;
+    }
+  }catch(e){ prog.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+}
+
+/* ---------- Друзья ---------- */
+async function pgFriends(arg, root){ userTab('friends', arg, async (u, out) => {
+  out.innerHTML = '<div class="msg">загрузка друзей…</div>';
+  const fr = await retry(async () => { const r = await api('friends',`/v1/users/${u.id}/friends`); if (!r || !Array.isArray(r.data)) throw new Error('Roblox вернул пустой ответ'); return r.data; }, 4);
+  const th = await heads(fr.map(f=>f.id));
+  out.innerHTML =
+    panel('ГРАФ ДРУЗЕЙ',`${esc(u.name)} · ${fr.length} друзей · клик по узлу — открыть игрока`,'<canvas id="cv"></canvas>')+
+    panel('ПРОВОДНИК ДРУЗЕЙ','Публичные списки, куки не нужны. «Где играет» ищет друга на публичных серверах',
+      `<input id="flt" placeholder="фильтр по нику" style="width:100%;margin-bottom:14px"><div class="grid" id="fg"></div>`);
+  const draw = () => {
+    const t = $('#flt').value.toLowerCase();
+    $('#fg').innerHTML = fr.filter(f=>(f.name+f.displayName).toLowerCase().includes(t)).map(f=>
+      `<div class="card"><img loading="lazy" src="${esc(th[f.id]||'')}" alt="" onclick="act('profile','${f.id}')"><span>${esc(f.displayName)}</span><span style="color:var(--mu)">@${esc(f.name)}</span>
+       <button class="sm" onclick="AUTO=true;act('profile','${f.id}')">▷ где играет</button></div>`).join('')
+      || '<div class="msg">никого нет (список друзей скрыт или пуст)</div>';
+  };
+  $('#flt').oninput = draw; draw();
+  window.FRX = fr; { const miss = fr.filter(f=>!th[f.id]).map(f=>f.id); if (miss.length) heads(miss).then(m => { Object.assign(th, m); draw(); }); } $('#fg').insertAdjacentHTML('beforebegin', '<div class="bar"><button class="sm" onclick="exportFr()">Экспорт CSV</button></div>');
+  graph(u, fr.slice(0,48));
+}, root);}
+function graph(u, fr){
+  const c = $('#cv'), d = devicePixelRatio||1, W = c.clientWidth, H = c.clientHeight;
+  c.width = W*d; c.height = H*d;
+  const x = c.getContext('2d'); x.scale(d,d);
+  const cx = W/2, cy = H/2, R = Math.min(W,H)/2-50;
+  const nodes = fr.map((f,i)=>({f, x:cx+R*Math.cos(i/fr.length*6.283), y:cy+R*Math.sin(i/fr.length*6.283)}));
+  x.strokeStyle='#333'; nodes.forEach(n=>{x.beginPath();x.moveTo(cx,cy);x.lineTo(n.x,n.y);x.stroke()});
+  x.fillStyle='#fff'; x.beginPath(); x.arc(cx,cy,10,0,7); x.fill();
+  x.font='10px monospace'; x.textAlign='center'; x.fillText(u.name,cx,cy+26);
+  nodes.forEach(n=>{x.fillStyle='#0b0b0b';x.strokeStyle='#fff';x.beginPath();x.arc(n.x,n.y,6,0,7);x.fill();x.stroke();x.fillStyle='#aaa';x.fillText(n.f.name.slice(0,14),n.x,n.y+19)});
+  c.onclick = e => {
+    const r = c.getBoundingClientRect(), mx = e.clientX-r.left, my = e.clientY-r.top;
+    const n = nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14);
+    if (n) act('friends', String(n.f.id));
+  };
+}
+
+/* ---------- Модерация ---------- */
+async function pgMod(arg, root){ userTab('mod', arg, async (u, out) => {
+  const [chk,hi,gr,th,av] = await Promise.allSettled([
+    api('users','/v1/usernames/users', post({usernames:[u.name],excludeBannedUsers:true})),
+    api('users',`/v1/users/${u.id}/username-history?limit=50`),
+    api('groups',`/v2/users/${u.id}/groups/roles`),
+    api('thumbnails',`/v1/users/avatar-headshot?userIds=${u.id}&size=150x150&format=Png`),
+    api('thumbnails',`/v1/users/avatar?userIds=${u.id}&size=420x420&format=Png`)
+  ]);
+  const hidden = val(chk, r=>!r.data.length, false);
+  const thState = val(th, r=>r.data[0]?.state, '—');
+  const banned = u.isBanned || hidden;
+  const place = ls.g('lastgame','10202515720');
+  const sig = (name, bad, txt) => row(name, bad ? `<span class="err">${txt[0]}</span>` : `<span class="ok">${txt[1]}</span>`);
+  out.innerHTML = `<div class="mod"><div>`+
+    panel('BAN ROBLOX',esc(u.name),
+      `<div class="verdict ${banned?'bad':'good'}">${banned?'ЗАБЛОКИРОВАН':'АКТИВЕН'}</div>`+
+      sig('isBanned в профиле', u.isBanned, ['да','нет'])+
+      sig('исчез из поиска', hidden, ['да','нет'])+
+      row('состояние аватара', esc(thState))+
+      row('id', u.id)+row('создан', dt(u.created))+
+      row('прошлые ники', val(hi,r=>r.data.map(x=>esc(x.name)).join(', ')||'нет'))+
+      row('групп', val(gr,r=>r.data.length))+
+      `<div class="msg" style="font-size:11px">Для чужого аккаунта Roblox публично отдаёт только текущий статус бана. Причины и историю нарушений видит лишь владелец аккаунта.</div>`+
+      `<div class="bar"><a class="btn" target="_blank" rel="noopener" href="https://www.roblox.com/users/${u.id}/profile">Roblox ↗</a><button onclick="act('profile','${u.id}')">Профиль</button></div>`)+
+    panel('ИСТОРИЯ НАРУШЕНИЙ ROBLOX','Своего аккаунта: через ваш воркер','<div id="myv"><div class="msg">загрузка…</div></div>')+
+    `</div><div>`+
+    panel('ДОСТУПНОСТЬ ИГРЫ И ИГРОК В ПЛЕЙСЕ','',
+      `<form class="bar" onsubmit="event.preventDefault();checkGame($('#mg').value)"><input id="mg" placeholder="Place ID игры" value="${esc(place)}"><button>Проверить</button></form><div id="mgr"></div>`)+
+    panel('БАН В ИГРЕ (OPEN CLOUD)','',
+      `<input id="ock" type="password" placeholder="Open Cloud API-ключ (user-restrictions)" style="width:100%;margin-bottom:10px" value="${esc(ls.g('ockey',''))}"><div class="bar"><button onclick="ocCheck(false)">Проверить игрока</button><button onclick="ocCheck(true)">Все баны игры</button></div><div id="ocr"></div>`)+
+    panel('ЖУРНАЛ БАНОВ В ИГРАХ','Игры не публикуют свои баны — журнал ведётся вручную и хранится в браузере',
+      `<form class="bar" onsubmit="addBan(event,${u.id})"><input id="bp" placeholder="Place ID" value="${esc(place)}"><input id="br" placeholder="Причина / срок"><button>Добавить</button></form><div id="bl"></div>
+       <button onclick="exportBans()">Экспорт JSON</button>`)+
+    `</div></div>`;
+  renderBans(); checkGame(place); myViolations(u);
+}, root);}
+async function checkGame(pid){
+  const out = $('#mgr'); pid = String(pid).trim();
+  if (!/^\d+$/.test(pid)) { out.innerHTML = '<div class="msg err">Нужен числовой Place ID</div>'; return; }
+  out.innerHTML = '<div class="msg">проверка…</div>';
+  try{
+    const uni = await placeToUniverse(pid);
+    const [pl,g] = await Promise.allSettled([
+      api('games',`/v1/games/multiget-playability-status?universeIds=${uni}`),
+      api('games',`/v1/games?universeIds=${uni}`)
+    ]);
+    const p = val(pl,r=>r[0],{}), st = p.playabilityStatus||'—', open = p.isPlayable || st==='GuestProhibited' || st==='Playable';
+    out.innerHTML = row('игра',val(g,r=>esc(r.data[0]?.name),'—'))+row('universe id',uni)+
+      row('игра открыта',open?'<span class="ok">да</span>':'<span class="err">нет</span>')+row('статус Roblox',esc(st))+
+      `<div class="bar" style="margin-top:12px"><button onclick="banInPlace('${pid}')">Проверить игрока в этом плейсе</button></div><div id="bpr"></div>`;
+  }catch(e){ out.innerHTML = `<div class="msg err">${esc(e.message)}</div>`; }
+}
+async function banInPlace(pid){
+  const o = $('#bpr'); if (!CUR) return; o.innerHTML = '<div class="msg">ищу игрока на серверах…</div>';
+  try{
+    const target = await headOf(CUR.id), s = await scanGame(pid, target, 5, {aborted:false});
+    o.innerHTML = s ? `<div class="verdict good">НЕ ЗАБАНЕН · СЕЙЧАС В ИГРЕ</div>`+row('job id',`<span class="jid">${esc(s.id)}</span>`)+`<div class="bar"><a class="btn" href="${joinUrl(pid,s.id)}">▷ Зайти к нему</a></div>`
+      : `<div class="verdict">НЕ ПОДТВЕРЖДЕНО</div><div class="msg err">Игрок не найден на публичных серверах (до 5 страниц). Roblox не публикует баны внутри игр, поэтому бан не подтверждён и не исключён.</div>`;
+  }catch(e){ o.innerHTML = `<div class="msg err">${esc(e.message)}</div>`; }
+}
+async function renderBans(){
+  if (!CUR || !$('#bl')) return;
+  const uid = CUR.id; let l = ls.g('banlog',[]).filter(x => x.uid==uid), note = '';
+  try{
+    const rm = await dbGet('banlog/'+uid), seen = new Set();
+    l = [...l, ...Object.values(rm||{})].filter(x => x && x.t).filter(x => { const k = x.t+'|'+x.place+'|'+x.reason; return !seen.has(k) && seen.add(k); }).sort((a,b)=>a.t-b.t);
+  }catch{ note = '<div class="msg" style="font-size:11px">облако недоступно — показан локальный журнал</div>'; }
+  if (!$('#bl')) return;
+  $('#bl').innerHTML = (l.map(x=>row(`${dt(x.t)} · place ${esc(x.place)}`,esc(x.reason))).join('') || '<div class="msg">записей нет</div>') + note;
+}
+function addBan(e,uid){
+  e.preventDefault();
+  const x = {uid,place:$('#bp').value.trim(),reason:$('#br').value.trim()||'—',t:Date.now()};
+  const l = ls.g('banlog',[]); l.push(x); ls.s('banlog',l); $('#br').value = '';
+  renderBans(); dbPush('banlog/'+uid, x).then(renderBans);
+}
+function exportBans(){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(ls.g('banlog',[]),null,2)],{type:'application/json'})); a.download='banlog.json'; a.click(); }
+
+/* ---------- Чарты ---------- */
+const FALLBACK_SORTS = [['top-playing-now','Популярное сейчас'],['up-and-coming','Набирающие популярность'],['top-revisited','Часто возвращаются'],['top-rated','Лучшие по оценкам']];
+async function pgCharts(){
+  $('#app').innerHTML = panel('CHARTS','Топы игр с фильтрами. Поиск по названию заменяет чарт поисковой выдачей',
+    `<div class="bar"><select id="cs"></select><label>онлайн от <input type="number" id="cmin" min="0" placeholder="0"></label><label>до <input type="number" id="cmax" min="0" placeholder="∞"></label><label>страниц <input type="number" id="cpg" value="3" min="1" max="10"></label></div>
+     <div class="bar"><input id="cq" placeholder="Поиск по названию (необязательно)"><input id="cph" placeholder="Фразы в названии/описании через запятую"><select id="cmode" style="flex:none"><option value="all">все фразы</option><option value="any">любая фраза</option></select><button onclick="runCharts()">Показать</button></div>`)+
+    `<div id="cres"></div>`;
+  $('#cs').innerHTML = FALLBACK_SORTS.map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
+  api('apis',`/explore-api/v1/get-sorts?sessionId=${sess()}&device=computer&country=all`).then(r => {
+    const s = (r.sorts||[]).filter(x => x.sortId && (!x.contentType || x.contentType==='Games'));
+    if (s.length) $('#cs').innerHTML = s.map(x=>`<option value="${esc(x.sortId)}">${esc(x.sortDisplayName||x.sortId)}</option>`).join('');
+  }).catch(()=>{});
+  $('#cq').onkeydown = e => { if (e.key==='Enter') runCharts(); };
+  runCharts();
+}
+async function runCharts(){
+  const box = $('#cres'); box.innerHTML = '<div class="msg">загрузка…</div>';
+  try{
+    const q = $('#cq').value.trim(), pages = Math.min(10, +$('#cpg').value||1);
+    const min = $('#cmin').value===''?0:+$('#cmin').value, max = $('#cmax').value===''?Infinity:+$('#cmax').value;
+    const phr = $('#cph').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean), all = $('#cmode').value==='all';
+    let items = q ? await omniSearch(q, pages) : await exploreSort($('#cs').value, pages);
+    const seen = new Set(); items = items.filter(g => g.u && !seen.has(g.u) && seen.add(g.u));
+    // точные данные и описание
+    for (let i=0;i<items.length;i+=50){
+      try{
+        const r = await api('games',`/v1/games?universeIds=${items.slice(i,i+50).map(g=>g.u).join()}`);
+        r.data.forEach(d => { const g = items.find(x=>x.u===d.id); if (g){ g.on = d.playing; g.pl = d.rootPlaceId||g.pl; g.d = d.description||''; g.n = d.name||g.n; } });
+      }catch{}
+    }
+    items = items.filter(g => g.on>=min && g.on<=max);
+    if (phr.length) items = items.filter(g => { const t = (g.n+' '+g.d).toLowerCase(); return all ? phr.every(p=>t.includes(p)) : phr.some(p=>t.includes(p)); });
+    items.sort((a,b)=>b.on-a.on);
+    const ic = {};
+    for (let i=0;i<items.length;i+=100){
+      try{ (await api('thumbnails',`/v1/games/icons?universeIds=${items.slice(i,i+100).map(g=>g.u).join()}&size=150x150&format=Png`)).data.forEach(d=>ic[d.targetId]=d.imageUrl); }catch{}
+    }
+    box.innerHTML = panel('РЕЗУЛЬТАТ',`найдено: ${items.length}`, items.length ? `<div class="tw"><table><thead><tr><th></th><th>ИГРА</th><th>ОНЛАЙН</th><th>ОЦЕНКА</th><th>PLACE ID</th><th>ДЕЙСТВИЯ</th></tr></thead><tbody>`+
+      items.map(g=>{ const t=g.up+g.dn; return `<tr ${g.pl?`class="clk" onclick="goto('game','${g.pl}')"`:''}><td><img class="ico" src="${esc(ic[g.u]||'')}" alt=""></td><td>${esc(g.n)}</td><td>${fmt(g.on)}</td><td>${t?Math.round(g.up/t*100)+'%':'—'}</td><td>${g.pl||'—'}</td>
+        <td>${g.pl?`<button class="sm" onclick="event.stopPropagation();goto('game','${g.pl}')">Открыть</button> <a class="btn sm" onclick="event.stopPropagation()" href="${joinUrl(g.pl)}">▷ Играть</a> <button class="sm" onclick="event.stopPropagation();cp('${g.pl}')">ID</button>`:''}</td></tr>`; }).join('')+`</tbody></table></div>` : '<div class="msg">Ничего не найдено. Ослабьте фильтры или увеличьте число страниц.</div>');
+  }catch(e){ errBox(box, e.message); }
+}
+
+/* ---------- Игра ---------- */
+function spark(h){
+  if (h.length<2) return '';
+  const mx = Math.max(...h.map(x=>x.p),1), mn = Math.min(...h.map(x=>x.p)), rg = (mx-mn)||1;
+  const ln = h.map((x,i)=>(i/(h.length-1)*300).toFixed(1)+','+(8+(1-(x.p-mn)/rg)*44).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 300 60" preserveAspectRatio="none"><defs><linearGradient id="sgf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`+
+    [15,30,45].map(y=>`<line x1="0" x2="300" y1="${y}" y2="${y}" stroke="#222" vector-effect="non-scaling-stroke"/>`).join('')+
+    `<polygon points="0,60 ${ln} 300,60" fill="url(#sgf)"/><polyline points="${ln}" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function statsHtml(h){
+  const v = h.map(x=>x.p);
+  return row('замеров',h.length)+row('минимум',fmt(Math.min(...v)))+row('максимум',fmt(Math.max(...v)))+
+    row('среднее',fmt(Math.round(v.reduce((a,b)=>a+b,0)/v.length)))+row('первый замер',new Date(h[0].t).toLocaleString('ru-RU'));
+}
+function paintOnline(p, h){
+  if (!$('#onl')) return;
+  $('#onl').textContent = fmt(p); $('#spk').innerHTML = spark(h) + (h.length>1 ? `<em class="spl t">${fmt(Math.max(...h.map(x=>x.p)))}</em><em class="spl b">${fmt(Math.min(...h.map(x=>x.p)))}</em>` : ''); $('#ost').innerHTML = statsHtml(h);
+  const prev = h[h.length-2];
+  $('#chg').textContent = prev ? `ИЗМЕНЕНИЕ: ${p-prev.p>=0?'+':''}${p-prev.p} К ПРЕДЫДУЩЕМУ ЗАМЕРУ` : 'ПЕРВЫЙ ЗАМЕР СОЗДАН, ИЗМЕНЕНИЕ ПОЯВИТСЯ ПОСЛЕ СЛЕДУЮЩИХ';
+}
+async function pollOnline(uni){
+  try{
+    const g = (await api('games',`/v1/games?universeIds=${uni}`)).data[0]; if (!g) return;
+    const pt = {t:Date.now(),p:g.playing}; window.HIST.push(pt); dbPush('hist/'+uni, pt);
+    ls.s('hist'+uni, window.HIST.slice(-300)); paintOnline(g.playing, window.HIST);
+  }catch{}
+}
+async function pgGame(arg, root){
+  const place = arg || ls.g('lastgame','10202515720');
+  const R = root || $('#app');
+  R.innerHTML = `<form class="bar" onsubmit="event.preventDefault();act('game',$('#gq').value.trim())"><input id="gq" placeholder="Place ID игры" value="${esc(place)}"><button>Открыть</button></form><div id="gm"></div>`;
+  const box = R.querySelector('#gm');
+  if (!/^\d+$/.test(place)) return errBox(box,'Нужен числовой Place ID');
+  ls.s('lastgame', place);
+  box.innerHTML = '<div class="msg">загрузка…</div>';
+  try{
+    const uni = await placeToUniverse(place);
+    const [gm,vt,pl] = await Promise.all([
+      api('games',`/v1/games?universeIds=${uni}`),
+      api('games',`/v1/games/votes?universeIds=${uni}`).catch(()=>null),
+      api('develop',`/v1/universes/${uni}/places?limit=100`).catch(()=>null)
+    ]);
+    const g = gm.data[0]; if (!g) throw new Error('Игра не найдена');
+    const gi = await api('thumbnails',`/v1/games/icons?universeIds=${uni}&size=150x150&format=Png`).catch(()=>null);
+    const pi = pl?.data?.length ? await api('thumbnails',`/v1/places/gameicons?placeIds=${pl.data.slice(0,100).map(p=>p.id).join()}&size=150x150&format=Png`).catch(()=>null) : null;
+    const icon = gi?.data?.[0]?.imageUrl || '', pic = {}; (pi?.data||[]).forEach(d => pic[d.targetId] = d.imageUrl);
+    const plOpts = (pl?.data?.length ? pl.data : [{id:place,name:g.name}]).map(p=>`<option value="${p.id}"${p.id==place?' selected':''}>${esc(p.name)} · ${p.id}</option>`).join('');
+    const v = vt?.data?.[0], tot = v ? v.upVotes+v.downVotes : 0, pct = tot ? Math.round(v.upVotes/tot*100) : 0;
+    let h = ls.g('hist'+uni,[]); const pt = {t:Date.now(),p:g.playing}; h.push(pt);
+    try{
+      await dbPush('hist/'+uni, pt);
+      const rh = await dbGet('hist/'+uni, '?orderBy="$key"&limitToLast=300');
+      const arr = rh ? Object.values(rh).filter(x => x && typeof x.t==='number' && typeof x.p==='number').sort((a,b)=>a.t-b.t) : [];
+      if (arr.length >= h.length) h = arr;
+    }catch{}
+    ls.s('hist'+uni, h.slice(-300));
+    box.innerHTML =
+      `<div class="bar" style="flex-wrap:nowrap;margin-bottom:14px"><img class="ico" style="width:72px;height:72px;flex:none" src="${esc(icon)}" alt=""><h2 class="t" style="margin:0">${esc(g.name)}</h2></div>
+       <div class="bar"><a class="btn" href="${joinUrl(place)}">▷ Играть</a><a class="btn" target="_blank" rel="noopener" href="https://www.roblox.com/games/${place}">Страница Roblox ↗</a>
+       <button data-n="${esc(g.name)}" onclick="fav('g','${place}',this.dataset.n)">★ В избранное</button><button onclick="cp('${place}')">Place ID</button><button onclick="cp('${uni}')">Universe ID</button><button onclick="cp('${joinUrl(place)}')">Ссылка входа</button></div>
+       <div class="g2">`+
+      panel('СЕЙЧАС В ИГРЕ','',`<div class="big" id="onl"></div><div class="sp" id="spk"></div><div class="msg" id="chg" style="font-size:11px;letter-spacing:.15em"></div>
+        ${row('посещения',fmt(g.visits))}${row('избранное',fmt(g.favoritedCount))}${row('макс. игроков',g.maxPlayers)}
+        ${row('создатель',esc(g.creator?.name))}${row('жанр',esc(g.genre||'—'))}${row('создана',dt(g.created))}${row('обновлена',dt(g.updated))}${row('universe id',uni)}`)+
+      panel('РЕЙТИНГ И ОПИСАНИЕ','',`<div class="rate"><i style="width:${pct}%"></i></div><div class="lbl">${pct}% ПОЛОЖИТЕЛЬНЫХ${v?` · 👍 ${fmt(v.upVotes)} · 👎 ${fmt(v.downVotes)}`:''}</div>
+        <p class="lbl" style="margin-top:18px">ОПИСАНИЕ</p><div class="desc">${esc(g.description)}</div>`)+`</div>`+
+      panel('СТАТИСТИКА ОНЛАЙНА','Замеры копятся в вашем браузере, пока вкладка открыта (раз в 30 сек)',`<div id="ost"></div>`)+
+      (pl?.data?.length ? panel('SUBPLACES',`всего: ${pl.data.length}`,`<div class="tw" style="max-height:440px;overflow:auto"><table><thead><tr><th></th><th>NAME</th><th>PLACE ID</th><th>ДЕЙСТВИЯ</th></tr></thead><tbody>`+
+        pl.data.map(p=>`<tr><td><img class="ico" src="${esc(pic[p.id]||'')}" alt=""></td><td>${esc(p.name)}${p.id==place?' <span class="tag">текущий</span>':''}</td><td>${p.id}</td>
+        <td><a class="btn sm" href="${joinUrl(p.id)}">▷ Зайти</a> <button class="sm" onclick="cp('${p.id}')">Копировать ID</button> <button class="sm" onclick="setPlace('${p.id}')">Серверы</button> <button class="sm" onclick="act('game','${p.id}')">Открыть</button></td></tr>`).join('')+`</tbody></table></div>`) : '')+
+      panel('ПОИСК ИГРОКА НА СЕРВЕРАХ','Сравнивает аватарку игрока с аватарками на публичных серверах (по токенам)',
+        `<form class="bar" onsubmit="findInGame(event)"><input id="pn" placeholder="Ник или ID" value="${esc(CUR?CUR.name:'')}"><button>Найти</button></form><div id="fres"></div>`)+
+      `<section class="p" id="srvp"><h3>PUBLIC SERVERS</h3><small id="scnt"></small>
+        <div class="pb"><div class="bar"><select id="spl" title="Place / Subplace" style="flex:2">${plOpts}</select><button id="more">Ещё серверы</button><button onclick="reloadServers()">Обновить</button><button onclick="joinPick('rand')">🎲 Случайный</button><button onclick="joinPick('empty')">Самый пустой</button><label><input type="checkbox" id="sav" checked> аватарки игроков</label></div>
+        <div class="bar"><input id="sfl" placeholder="фильтр по Job ID"><label>игроков от <input type="number" id="smin" min="0"></label><label>до <input type="number" id="smax" min="0"></label>
+        <select id="smode" style="flex:none"><option value="all">все</option><option value="free">есть места</option><option value="full">заполнены</option><option value="hits">найденный игрок</option></select>
+        <select id="sort" style="flex:none"><option value="api">порядок Roblox</option><option value="pd">больше игроков</option><option value="pa">меньше игроков</option><option value="ping">лучший пинг</option><option value="fps">лучший FPS</option></select>
+        <select id="sper" style="flex:none"><option>10</option><option selected>20</option><option>50</option></select></div><div class="msg" id="avd" style="font-size:11px"></div>
+        <div class="tw"><table><thead><tr><th>JOB ID</th><th>ИГРОКИ</th><th>ПИНГ</th><th>FPS</th><th>ДЕЙСТВИЯ</th></tr></thead><tbody id="srv"></tbody></table></div><div class="bar" id="pg" style="margin-top:12px"></div></div></section>`+
+      `<section class="p"><h3>PRIVATE SERVERS</h3><small>Нужен воркер с вашим ROBLOSECURITY: Roblox отдаёт только приватные серверы и серверы друзей, доступные вашему аккаунту</small>
+        <div class="pb"><div class="bar"><select id="pt" style="flex:none"><option value="private-servers">Private (VIP)</option><option value="servers/Friend">Серверы друзей</option></select><button onclick="loadPrivate()">Загрузить</button></div><div id="prvm"></div>
+        <div class="tw"><table><thead><tr><th>JOB ID</th><th>ИГРОКИ</th><th>ПИНГ</th><th>FPS</th><th>ДЕЙСТВИЯ</th></tr></thead><tbody id="prv"></tbody></table></div></div></section>`;
+    window.HIST = h; paintOnline(g.playing, h);
+    window.SRV = {place, cursor:'', all:[], av:{}, target:'', tkey:'', hits:new Set(), priv:[], page:1};
+    $('#more').onclick = loadServers; $('#spl').onchange = e => setPlace(e.target.value);
+    ['sfl','smin','smax','smode','sort','sper'].forEach(i => { const f = () => { SRV.page = 1; renderServers(); }; $('#'+i).addEventListener('input', f); $('#'+i).addEventListener('change', f); });
+    $('#sav').onchange = async () => { if ($('#sav').checked) await tokAv(SRV.all.flatMap(s=>s.playerTokens||[]), SRV.av); renderServers(); };
+    loadServers();
+    window.GT = setInterval(()=>pollOnline(uni), 30000);
+  }catch(e){ errBox(box, e.message); }
+}
+const srvJoin = (place, s) => joinUrl(place, s.id) + (s.accessCode ? '&accessCode='+encodeURIComponent(s.accessCode) : '');
+function srvRow(s, S, showAv){
+  const av = showAv ? (s.playerTokens||[]).map(t => { const u = S.av[t]; return u ? `<img src="${esc(u)}" class="${S.tkey && imgKey(u)===S.tkey ? 'me' : ''}" alt="">` : '<i></i>'; }).join('') : '';
+  const j = srvJoin(S.place, s);
+  return `<tr class="${S.hits.has(s.id)?'hit':''}" data-id="${esc(s.id)}"><td>${s.name?`<b>${esc(s.name)}</b><br>`:''}<span class="jid">${esc(s.id)}</span></td>
+    <td>${av?`<div class="avs">${av}</div>`:''}<small>${s.playing}/${s.maxPlayers}</small></td><td>${s.ping??'—'}</td><td>${s.fps?s.fps.toFixed(1):'—'}</td>
+    <td><a class="btn sm" href="${esc(j)}">▷ Вход</a> <button class="sm" onclick="cp('${esc(j)}'.replace(/&amp;/g,'&'))">Ссылка</button> <button class="sm" onclick="cp('${esc(s.id)}')">Job ID</button></td></tr>`;
+}
+function srvFiltered(){
+  const S = window.SRV, f = ($('#sfl').value||'').toLowerCase().trim(), mn = $('#smin').value===''?0:+$('#smin').value, mx = $('#smax').value===''?1e9:+$('#smax').value, m = $('#smode').value;
+  const l = S.all.filter(s => (!f || s.id.toLowerCase().includes(f)) && s.playing>=mn && s.playing<=mx &&
+    (m==='all' || (m==='free' && s.playing<s.maxPlayers) || (m==='full' && s.playing>=s.maxPlayers) || (m==='hits' && S.hits.has(s.id))));
+  const k = {pd:(a,b)=>b.playing-a.playing, pa:(a,b)=>a.playing-b.playing, ping:(a,b)=>(a.ping??1e9)-(b.ping??1e9), fps:(a,b)=>(b.fps||0)-(a.fps||0)}[$('#sort').value];
+  return k ? l.sort(k) : l;
+}
+function renderServers(){
+  const S = window.SRV; if (!S || !$('#srv')) return;
+  const showAv = $('#sav').checked, list = srvFiltered(), per = +$('#sper').value || 20, pages = Math.max(1, Math.ceil(list.length/per));
+  if (S.page > pages) S.page = pages;
+  $('#srv').innerHTML = list.slice((S.page-1)*per, S.page*per).map(s => srvRow(s, S, showAv)).join('') || '<tr><td colspan="5" class="msg">серверов по фильтрам нет</td></tr>';
+  $('#scnt').textContent = `place ${S.place} · загружено: ${S.all.length} · по фильтрам: ${list.length} · лист ${S.page}/${pages}`;
+  const pn = []; for (let i=1;i<=pages;i++) if (pages<=12 || i===1 || i===pages || Math.abs(i-S.page)<=2) pn.push(i);
+  $('#pg').innerHTML = '<span class="msg">ЛИСТ</span>' + pn.map((n,i) => (i && n-pn[i-1]>1 ? '<span class="msg">…</span>' : '') + `<button class="sm${n===S.page?' on':''}" onclick="SRV.page=${n};renderServers()">${n}</button>`).join('') +
+    (S.cursor ? '<span class="msg">· есть ещё серверы — «Ещё серверы»</span>' : '');
+  $('#more').disabled = !S.cursor;
+  const withTok = S.all.filter(s => (s.playerTokens||[]).length).length, allTok = new Set(S.all.flatMap(s => s.playerTokens||[])).size;
+  const got = Object.values(S.av).filter(Boolean).length, A = window.AVSTAT;
+  if ($('#avd')) $('#avd').textContent = `серверов с токенами: ${withTok}/${S.all.length} · токенов: ${allTok} · аватарок загружено: ${got}` +
+    (A.fail ? ` · ошибок запросов: ${A.fail} (${A.last})` : '') + (A.empty ? ` · без картинки: ${A.empty}${A.state?' ('+A.state+')':''}` : '');
+  renderPrivate();
+}
+function setPlace(id){
+  const S = window.SRV; if (!S) return;
+  Object.assign(S, {place:String(id), cursor:'', all:[], hits:new Set(), priv:[], page:1});
+  if ($('#spl')) $('#spl').value = id; $('#srv').innerHTML = ''; $('#prv').innerHTML = '';
+  loadServers(); const t = $('#srvp'); if (t) t.scrollIntoView({behavior:'smooth'});
+}
+function renderPrivate(){ const S = window.SRV; if (S && $('#prv')) $('#prv').innerHTML = S.priv.map(s => srvRow(s, S, true)).join(''); }
+async function loadPrivate(){
+  const S = window.SRV, m = $('#prvm');
+  if (!workerOn()){ m.innerHTML = '<div class="msg">Приватные серверы видны только через воркер с вашим ROBLOSECURITY.</div><button onclick="openCfg()">Подключить воркер</button>'; return; }
+  m.innerHTML = '<div class="msg">загрузка…</div>';
+  try{
+    const r = await wjson('games', `/v1/games/${S.place}/${$('#pt').value}?limit=100`);
+    S.priv = (r && r.data) || [];
+    await tokAv(S.priv.flatMap(s => s.playerTokens||[]), S.av);
+    markHits(S.priv); renderServers();
+    m.innerHTML = `<div class="msg">найдено: ${S.priv.length}${S.priv.length?'':' (нет серверов, доступных вашему аккаунту)'}</div>`;
+  }catch(e){ m.innerHTML = `<div class="msg err">Ошибка: ${esc(e.message)}. Проверьте, что воркер обновлён и в нём задан ROBLOSECURITY.</div>`; }
+}
+async function loadServers(){
+  const S = window.SRV, btn = $('#more'), pl = S.place; if (btn) btn.disabled = true;
+  for (let a=0;a<4;a++){
+    try{
+      $('#scnt').textContent = a ? `повторная попытка ${a}…` : 'загрузка серверов…';
+      const r = await api('games',`/v1/games/${pl}/servers/Public?limit=100&sortOrder=Desc${S.cursor?'&cursor='+encodeURIComponent(S.cursor):''}`);
+      if (S.place !== pl) return [];
+      S.cursor = r.nextPageCursor||''; S.all.push(...r.data); renderServers();
+      if ($('#sav').checked || S.tkey){
+        await tokAv(r.data.flatMap(s=>s.playerTokens||[]), S.av);
+        markHits(r.data); renderServers();
+      }
+      return r.data;
+    }catch(e){
+      if (a===3){ $('#scnt').textContent = 'Ошибка: '+e.message+' — нажмите «Обновить»'; if (btn) btn.disabled = false; return []; }
+      await sleep(1500*(a+1));
+    }
+  }
+}
+function reloadServers(){ const S = window.SRV; S.cursor=''; S.all=[]; S.hits=new Set(); S.page=1; $('#srv').innerHTML=''; loadServers(); }
+function markHits(servers){
+  const S = window.SRV; if (!S.tkey) return null; let first = null;
+  servers.forEach(s => { if ((s.playerTokens||[]).some(t => S.av[t] && imgKey(S.av[t]) === S.tkey)){ S.hits.add(s.id); first = first || s; } });
+  return first;
+}
+async function findInGame(e){
+  e.preventDefault(); const out = $('#fres'), S = window.SRV; out.innerHTML = '<div class="msg">ищу…</div>';
+  try{
+    const u = await resolveUser($('#pn').value); CUR = u;
+    S.target = await headOf(u.id); S.tkey = imgKey(S.target); S.hits = new Set();
+    await tokAv(S.all.flatMap(s => s.playerTokens||[]), S.av);
+    let hit = markHits(S.all), n = 0;
+    if (S.priv.length){ const ph = markHits(S.priv); hit = hit || ph; }
+    while (!hit && S.cursor && n++ < 40){
+      out.innerHTML = `<div class="msg">ищу… просканировано серверов: ${S.all.length}</div>`;
+      const page = await loadServers(); hit = markHits(page);
+    }
+    renderServers();
+    const got = Object.values(S.av).filter(Boolean).length;
+    out.innerHTML = `<div class="bar"><img class="ico" src="${esc(S.target)}" alt=""><span class="msg">ваша аватарка (хэш ${esc(S.tkey.slice(0,12))}…)</span></div>`+
+      row('игрок',esc(u.name))+row('статус',hit?'<span class="ok">в игре</span>':'не найден')+
+      row('совпадений серверов',S.hits.size)+row('аватарок серверов сравнено',got)+
+      row('job id',hit?`<span class="jid">${esc(hit.id)}</span>`:'—')+
+      (hit?`<div class="bar"><a class="btn" href="${esc(srvJoin(S.place,hit))}">▷ Зайти к нему</a><button onclick="cp('${esc(hit.id)}')">Job ID</button></div>`:'')+
+      (!got ? '<div class="msg err" style="font-size:11px">Roblox не вернул ни одной аватарки по токенам. Чаще всего публичные прокси блокируют POST-запросы: подключите воркер в «⚙ API» (диагностика — строка над таблицей серверов).</div>'
+        : (hit ? '' : '<div class="msg" style="font-size:11px">Игрок не в игре, на приватном сервере или не попал в просмотренные серверы. Приватные серверы ищутся кнопкой «Загрузить» в блоке Private Servers (нужен воркер с куки).</div>'));
+    if (hit){
+      dbPush('sightings/'+u.id,{t:Date.now(),place:S.place,job:hit.id,name:document.querySelector('h2.t')?.textContent||''});
+      const tr = document.querySelector(`tr[data-id="${hit.id}"]`); if (tr) tr.scrollIntoView({block:'center'});
+    }
+  }catch(err){ out.innerHTML = `<div class="msg err">${esc(err.message)}</div>`; }
+}
+
+/* ---------- Bloxlink (запрос идёт напрямую, ключ не уходит на сторонние прокси) ---------- */
+function pgBlox(arg, root){
+  (root || $('#app')).innerHTML = panel('BLOXLINK','Discord ↔ Roblox. Нужен API-ключ сервера (dev.bloxlink.com) и ID вашего Discord-сервера',
+    `<div class="bar"><input id="bk" type="password" placeholder="Bloxlink API key"><input id="bg" placeholder="ID Discord-сервера"></div>
+     <input id="bq" placeholder="Discord ID  или  Roblox ник/ID" style="width:100%;margin-bottom:12px" value="${esc(arg||'')}">
+     <div class="bar"><button onclick="blox('d2r')">Discord → Roblox</button><button onclick="blox('r2d')">Roblox → Discord</button></div><div id="bres"></div>`);
+  $('#bk').value = ls.g('blkey',''); $('#bg').value = ls.g('blguild','');
+}
+async function blox(mode){
+  const k=$('#bk').value.trim(), g=$('#bg').value.trim(), q=$('#bq').value.trim(), out=$('#bres');
+  ls.s('blkey',k); ls.s('blguild',g);
+  if(!k||!g||!q){ out.innerHTML='<div class="msg err">Заполните ключ, ID сервера и значение</div>'; return; }
+  out.innerHTML='<div class="msg">запрос…</div>';
+  try{
+    const url = mode==='r2d'
+      ? `https://api.blox.link/v4/public/guilds/${encodeURIComponent(g)}/roblox-to-discord/${(await resolveUser(q)).id}`
+      : `https://api.blox.link/v4/public/guilds/${encodeURIComponent(g)}/discord-to-roblox/${encodeURIComponent(q)}`;
+    const r = await fetch(workerUrl(url), {headers:{Authorization:k}});
+    const j = await r.json().catch(()=>({}));
+    if (!r.ok) throw new Error(j.error || 'HTTP '+r.status);
+    if (mode==='d2r'){
+      const rid = j.robloxID, ru = j.resolved?.roblox;
+      out.innerHTML = rid ? row('Roblox ID',rid)+row('ник',esc(ru?.name||'—'))+row('отображаемое имя',esc(ru?.displayName||'—'))+
+        `<div class="bar"><button onclick="act('profile','${rid}')">Профиль</button><button onclick="AUTO=true;act('profile','${rid}')">▷ Где играет</button></div>` : '<div class="msg">Аккаунт не привязан</div>';
+    } else {
+      const ids = j.discordIDs||[];
+      out.innerHTML = ids.length ? ids.map(d=>row('Discord ID',esc(d))+row('Discord-ник',esc(j.resolved?.discord?.[d]?.user?.username||j.resolved?.discord?.[d]?.nick||'—'))).join('') : '<div class="msg">Discord не привязан</div>';
+    }
+  }catch(e){
+    out.innerHTML = `<div class="msg err">Ошибка: ${esc(e.message)}. «Failed to fetch» — браузер блокирует запрос к api.blox.link (CORS): вставьте ссылку воркера в «⚙ API».</div>`;
+  }
+}
+
+/* ---------- История нарушений своего аккаунта (куки хранится только в секретах воркера) ---------- */
+async function wjson(sub, path){
+  const r = await fetch(workerUrl(`https://${sub}.roblox.com${path}`));
+  const t = await r.text(); let j = null; try{ j = t ? JSON.parse(t) : null; }catch{}
+  if (!r.ok) throw new Error((j && (j.errors?.[0]?.message || j.message)) || 'HTTP '+r.status);
+  return j;
+}
+const VK = {punishmentTypeDescription:'тип наказания',beginDate:'начало',endDate:'окончание',messageToUser:'сообщение Roblox',badUtterances:'нарушения',isAppealable:'можно обжаловать',hasAppealed:'обжаловано',punishmentId:'id наказания',reviewer:'проверяющий'};
+function kv(o){
+  return Object.entries(o).filter(([,v])=>v!=null && v!=='' && !(Array.isArray(v)&&!v.length)).map(([k,v]) => {
+    const s = (/date/i.test(k) && !isNaN(Date.parse(v))) ? new Date(v).toLocaleString('ru-RU') : (typeof v==='object' ? esc(JSON.stringify(v)) : esc(v));
+    return row(esc(VK[k]||k), s);
+  }).join('');
+}
+async function myViolations(u){
+  const box = $('#myv'); if (!box) return;
+  if (!workerOn()){
+    box.innerHTML = '<div class="msg">Чтобы видеть историю нарушений своего аккаунта, подключите воркер с вашим ROBLOSECURITY в секретах (см. инструкцию).</div><button onclick="openCfg()">Подключить воркер</button>';
+    return;
+  }
+  try{
+    let me = null;
+    try{ me = await wjson('users','/v1/users/authenticated'); }catch{}
+    if (!me || !me.id){ box.innerHTML = '<div class="msg">Воркер подключён, но в нём не задан секрет ROBLOSECURITY (или он устарел) — история своего аккаунта недоступна.</div>'; return; }
+    let head = row('аккаунт воркера', esc(me.name));
+    if (String(me.id) !== String(u.id)) head += '<div class="msg err" style="font-size:11px">Выбран другой игрок: Roblox отдаёт историю нарушений только владельцу аккаунта, поэтому ниже данные аккаунта '+esc(me.name)+'.</div>';
+    const v = await wjson('usermoderation','/v1/not-approved');
+    const arr = Array.isArray(v) ? v : ((v && (v.data||v.items||v.violations||v.punishments)) || (v && Object.keys(v).length ? [v] : []));
+    box.innerHTML = head + (arr.length ? arr.map(x=>`<div style="border:1px solid var(--ln);padding:8px 12px;margin-top:10px">${kv(x)}</div>`).join('') : '<div class="msg ok">Нарушений нет</div>');
+  }catch(e){ box.innerHTML = `<div class="msg err">Ошибка: ${esc(e.message)}</div>`; }
+}
+
+async function loadSightings(uid){
+  const b = $('#sight'); if (!b) return;
+  try{
+    const r = await dbGet('sightings/'+uid, '?orderBy="$key"&limitToLast=5');
+    const a = Object.values(r||{}).filter(x=>x&&x.t).sort((x,y)=>y.t-x.t);
+    if (a.length) b.innerHTML = '<p class="lbl" style="margin-top:14px">ПОСЛЕДНИЕ ОБНАРУЖЕНИЯ</p>' + a.map(x => {
+      const pl = String(x.place).replace(/\D/g,''), jb = String(x.job||'').replace(/[^0-9a-fA-F-]/g,'');
+      return row(esc(new Date(x.t).toLocaleString('ru-RU'))+' · '+esc(x.name||pl), `<a class="btn sm" href="${joinUrl(pl,jb)}">▷ Сервер</a> <button class="sm" onclick="act('game','${pl}')">Игра</button>`);
+    }).join('');
+  }catch{}
+}
+
+/* ---------- Действия внутри вкладки (окно поверх текущей вкладки, без перехода) ---------- */
+function act(tab, arg){ if (tab === window.TABCUR){ closeModal(); goto(tab, arg); } else openModal(tab, arg); }
+function closeModal(){
+  const m = $('#mdl2'); if (!m) return;
+  if (window.MT === 'game') clearInterval(window.GT);
+  if (window.SCAN) window.SCAN.abort();
+  m.remove(); window.MT = '';
+}
+function openModal(tab, arg){
+  closeModal();
+  const d = document.createElement('div'); d.id = 'mdl2';
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:15;overflow:auto;padding:20px';
+  d.innerHTML = `<div style="max-width:1240px;margin:0 auto"><div class="bar"><button onclick="closeModal()">✕ Закрыть</button></div><div id="mroot"></div></div>`;
+  document.body.appendChild(d); window.MT = tab;
+  ({profile:pgProfile,friends:pgFriends,mod:pgMod,game:pgGame,blox:pgBlox}[tab] || pgProfile)(arg, d.querySelector('#mroot'));
+}
+addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ---------- Инструменты ---------- */
+function emo(s, st){ const b = {ri:0x1F1E6, sq:0x1F170, ci:0x24D0}[st]; return [...s].map(c => /[a-z]/.test(c) ? String.fromCodePoint(b + c.charCodeAt(0) - 97) : c).join(st==='ri' ? '\u200b' : ''); }
+function genLink(){
+  const a = $('#l1').value.trim(), b = $('#l2').value.trim(), o = $('#lo');
+  if (!a || !b){ o.value = ''; return; }
+  const m = /^(https?)(:\/\/.*)$/i.exec(a);
+  o.value = `[${m ? emo(m[1].toLowerCase(), $('#ls1').value) + m[2] : a}](${b})`;
+}
+function genJoin(){
+  const p = $('#jp').value.trim(), j = $('#jj').value.trim(), o = $('#jr');
+  if (!/^\d+$/.test(p)){ o.innerHTML = ''; return; }
+  const a = joinUrl(p, j), b = `https://www.roblox.com/games/start?placeId=${p}${j?'&gameInstanceId='+encodeURIComponent(j):''}`;
+  o.innerHTML = [a,b].map(x => `<div class="r"><span class="jid">${esc(x)}</span><button class="sm" data-c="${esc(x)}" onclick="cp(this.dataset.c)">Копировать</button></div>`).join('');
+}
+async function convPlace(){
+  const o = $('#cpr'), p = $('#cp1').value.trim();
+  if (!/^\d+$/.test(p)){ o.innerHTML = '<div class="msg err">Нужен числовой Place ID</div>'; return; }
+  o.innerHTML = '<div class="msg">…</div>';
+  try{ const u = await placeToUniverse(p); o.innerHTML = row('universe id', u) + `<div class="bar"><button onclick="cp('${u}')">Копировать</button><button onclick="act('game','${p}')">Открыть игру</button></div>`; }
+  catch(e){ o.innerHTML = `<div class="msg err">${esc(e.message)}</div>`; }
+}
+function pgTools(){
+  const ta = 'width:100%;background:#0a0a0a;border:1px solid var(--ln);color:var(--tx);padding:11px 13px;font:inherit';
+  $('#app').innerHTML = panel('ГЕНЕРАТОР ССЫЛОК', 'Ссылка 1 — текст, где «http» станет смайликами; ссылка 2 — куда она ведёт. Результат: [текст](ссылка 2)',
+    `<input id="l1" placeholder="Ссылка 1 (https://…)" style="width:100%;margin-bottom:10px"><input id="l2" placeholder="Ссылка 2 (https://…)" style="width:100%;margin-bottom:10px">
+     <div class="bar"><select id="ls1" style="flex:none"><option value="sq">🅷🆃🆃🅿 квадраты</option><option value="ci">ⓗⓣⓣⓟ круги</option><option value="ri">🇭 🇹 🇹 🇵 буквы-флаги</option></select><button onclick="genLink();cp($('#lo').value)">Копировать</button></div>
+     <textarea id="lo" readonly rows="3" style="${ta}"></textarea>`) +
+    panel('PLACE ID → UNIVERSE ID', '', `<form class="bar" onsubmit="event.preventDefault();convPlace()"><input id="cp1" placeholder="Place ID"><button>Узнать</button></form><div id="cpr"></div>`) +
+    panel('ROBUX → USD','',`<input id="rb" type="number" min="0" placeholder="Robux" style="width:100%"><div id="rbr"></div>`) +
+    panel('ССЫЛКА ВХОДА НА СЕРВЕР', 'Place ID + Job ID (необязательно) → ссылки для запуска', `<div class="bar"><input id="jp" placeholder="Place ID"><input id="jj" placeholder="Job ID"></div><div id="jr"></div>`);
+  ['l1','l2','ls1'].forEach(i => $('#'+i).addEventListener('input', genLink));
+  ['jp','jj'].forEach(i => $('#'+i).addEventListener('input', genJoin));
+  $('#rb').addEventListener('input', () => { const n = +$('#rb').value || 0; $('#rbr').innerHTML = row('покупка Robux (≈ $0.0125/R$)','$'+(n*0.0125).toFixed(2))+row('вывод DevEx ($0.0035/R$)','$'+(n*0.0035).toFixed(2)); });
+}
+
+/* ---------- Доп. функции ---------- */
+async function loadExtra(id, out){
+  const d = document.createElement('div'); out.appendChild(d);
+  const [av,bd,cl] = await Promise.allSettled([api('avatar',`/v1/users/${id}/avatar`), api('badges',`/v1/users/${id}/badges?limit=25&sortOrder=Desc`), api('inventory',`/v1/users/${id}/assets/collectibles?limit=100&sortOrder=Desc`)]);
+  const as = val(av, r => r.assets||[], []), th = {}, pc = {};
+  if (as.length){
+    try{ (await api('thumbnails',`/v1/assets?assetIds=${as.map(a=>a.id).join()}&size=150x150&format=Png`)).data.forEach(x => th[x.targetId] = x.imageUrl); }catch{}
+    await Promise.all(as.map(async a => {
+      try{
+        const e = await api('economy',`/v2/assets/${a.id}/details`);
+        if (e.IsLimited || e.IsLimitedUnique){ const r = await api('economy',`/v1/assets/${a.id}/resale-data`).catch(()=>({})); pc[a.id] = {v:r.recentAveragePrice||0, t:'RAP'}; }
+        else pc[a.id] = {v:e.PriceInRobux||0, t:e.PriceInRobux ? 'R$' : (e.IsForSale ? 'бесплатно' : 'не продаётся')};
+      }catch{}
+    }));
+  }
+  const total = Object.values(pc).reduce((n,x)=>n+x.v,0), bs = val(bd, r => r.data||[], []);
+  const cd = val(cl, r => r.data||[], null), rap = cd ? cd.reduce((n,x)=>n+(x.recentAveragePrice||0),0) : 0;
+  d.innerHTML = (as.length ? panel('НАДЕТО НА АВАТАРЕ · СТОИМОСТЬ','',row('цена всего скина',`<span class="ok">R$ ${fmt(total)}</span> ≈ $${(total*0.0035).toFixed(2)} (DevEx)`)+`<div class="grid">`+as.map(a=>`<div class="card"><a href="https://www.roblox.com/catalog/${a.id}" target="_blank" rel="noopener"><img src="${esc(th[a.id]||'')}" alt=""></a><span>${esc(a.name)}</span><span>${pc[a.id] ? (pc[a.id].v ? pc[a.id].t+' '+fmt(pc[a.id].v) : pc[a.id].t) : '—'}</span></div>`).join('')+`</div>`) : '') +
+    panel('ЛИМИТЕДЫ ИГРОКА','', cd ? row('предметов',cd.length)+row('общий RAP',`R$ ${fmt(rap)}`)+cd.slice(0,60).map(x=>`<a class="tag" target="_blank" rel="noopener" href="https://www.roblox.com/catalog/${x.assetId}">${esc(x.name)} · ${fmt(x.recentAveragePrice)}</a>`).join('') : '<div class="msg err">Инвентарь скрыт или недоступен</div>') +
+    (bs.length ? panel('ПОСЛЕДНИЕ БЕЙДЖИ','',bs.map(b=>`<a class="tag" target="_blank" rel="noopener" href="https://www.roblox.com/badges/${b.id}">${esc(b.name)}</a>`).join('')) : '');
+}
+function exportFr(){
+  const c = 'id,name,displayName\n' + (window.FRX||[]).map(f => [f.id,f.name,f.displayName].map(x => '"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c],{type:'text/csv'})); a.download = 'friends.csv'; a.click();
+}
+function joinPick(m){
+  const S = window.SRV, l = S.all.filter(s => s.playing < s.maxPlayers);
+  if (!l.length){ toast('нет серверов с местами'); return; }
+  const nz = l.filter(s => s.playing > 0), base = nz.length ? nz : l;
+  const s = m==='rand' ? l[Math.floor(Math.random()*l.length)] : base.reduce((a,b) => b.playing<a.playing ? b : a);
+  toast(`сервер ${s.playing}/${s.maxPlayers}`); location.href = srvJoin(S.place, s);
+}
+function fav(k, id, n){
+  const w = ls.g('wl',{p:[],g:[]});
+  if (w[k].some(x => x.id==id)){ toast('Уже в избранном'); return; }
+  w[k].push({id:String(id), n}); ls.s('wl', w); toast('Добавлено в избранное');
+}
+function unfav(k, id){ const w = ls.g('wl',{p:[],g:[]}); w[k] = w[k].filter(x => x.id!=id); ls.s('wl', w); pgFav(); }
+function pgFav(){
+  const w = ls.g('wl',{p:[],g:[]});
+  const list = (k, t, tab) => panel(t, '', w[k].length ? w[k].map(x => `<div class="r"><span>${esc(x.n)} · ${esc(x.id)}</span><b><button class="sm" onclick="act('${tab}','${x.id}')">Открыть</button> ${k==='p'?`<button class="sm" onclick="AUTO=true;act('profile','${x.id}')">▷ где играет</button> `:''}<button class="sm" onclick="unfav('${k}','${x.id}')">✕</button></b></div>`).join('') : '<div class="msg">пусто — добавляйте кнопкой «★ В избранное» в профиле или игре</div>');
+  $('#app').innerHTML = list('p','ИГРОКИ','profile') + list('g','ИГРЫ','game');
+}
+
+/* ---------- Open Cloud: баны в игре (только для владельца игры; ключ идёт через ваш воркер) ---------- */
+const ocBody = g => row('активен',g.active?'да':'нет')+row('причина (игроку)',esc(g.displayReason||'—'))+row('причина (приватная)',esc(g.privateReason||'—'))+row('начало',g.startTime?new Date(g.startTime).toLocaleString('ru-RU'):'—')+row('срок',g.duration?esc(g.duration):'навсегда');
+async function ocReq(path){
+  const k = $('#ock').value.trim(); ls.s('ockey', k);
+  if (!k) throw new Error('Введите Open Cloud API-ключ с правом чтения user-restrictions вашей игры');
+  if (!workerOn()) throw new Error('Нужен воркер: подключите обновлённый worker.js в «⚙ API»');
+  const r = await fetch(workerUrl('https://apis.roblox.com'+path), {headers:{'x-api-key':k}});
+  const j = await r.json().catch(()=>({}));
+  if (!r.ok){ const e = new Error(j.message || j.error || 'HTTP '+r.status); e.status = r.status; throw e; }
+  return j;
+}
+async function ocCheck(all){
+  const o = $('#ocr'); o.innerHTML = '<div class="msg">запрос…</div>';
+  try{
+    const uni = await placeToUniverse($('#mg').value.trim());
+    if (!all){
+      let g = {};
+      try{ g = (await ocReq(`/cloud/v2/universes/${uni}/user-restrictions/${CUR.id}`)).gameJoinRestriction || {}; }catch(e){ if (e.status!==404) throw e; }
+      o.innerHTML = `<div class="verdict ${g.active?'bad':'good'}">${g.active?'ЗАБАНЕН В ИГРЕ':'НЕ ЗАБАНЕН'}</div>` + (g.active ? ocBody(g) : '');
+    } else {
+      const l = (await ocReq(`/cloud/v2/universes/${uni}/user-restrictions?maxPageSize=100`)).userRestrictions || [];
+      o.innerHTML = row('записей',l.length) + l.map(x => `<div style="border:1px solid var(--ln);padding:8px 12px;margin-top:8px">${row('игрок',esc(String(x.user||'').replace('users/','')))}${ocBody(x.gameJoinRestriction||{})}</div>`).join('');
+    }
+  }catch(e){ o.innerHTML = `<div class="msg err">${esc(e.message)}${e.status===403||e.status===401?' — ключ должен принадлежать владельцу игры':''}</div>`; }
+}
+
+/* ---------- Маркетплейс ---------- */
+const AT = {11:'Рубашка',12:'Штаны',2:'Футболка',8:'Шапка',41:'Аксессуар волос',42:'Аксессуар лица',43:'Шея',44:'Плечи',45:'Грудь',46:'Спина',47:'Пояс',19:'Gear'};
+function pgMarket(){
+  $('#app').innerHTML = panel('МАРКЕТПЛЕЙС','',
+    `<div class="bar"><input id="mk" placeholder="Название предмета"><select id="mt" style="flex:none"><option value="">любой тип</option>${Object.entries(AT).map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select>
+     <select id="mr" style="flex:none"><option value="">любая редкость</option><option value="reg">обычные</option><option value="Limited">Limited</option><option value="LimitedUnique">LimitedU</option><option value="Collectible">Collectible</option></select>
+     <select id="ms" style="flex:none"><option value="2">по продажам</option><option value="1">по фаворитам</option><option value="0">по релевантности</option><option value="3">по обновлению</option><option value="4">сначала дешёвые</option><option value="5">сначала дорогие</option></select></div>
+     <div class="bar"><label>цена от <input type="number" id="pmin" min="0"></label><label>до <input type="number" id="pmax" min="0"></label><label>фаворитов от <input type="number" id="fmin" min="0"></label><label>покупок от <input type="number" id="bmin" min="0"></label>
+     <label>страниц <input type="number" id="mpg" value="3" min="1" max="10"></label><label><input type="checkbox" id="mn"> не в продаже</label><button onclick="runMarket()">Искать</button></div>`) + '<div id="mres"></div>';
+  $('#mk').onkeydown = e => { if (e.key==='Enter') runMarket(); };
+  runMarket();
+}
+async function runMarket(){
+  const box = $('#mres'); box.innerHTML = '<div class="msg">загрузка…</div>';
+  try{
+    const q = $('#mk').value.trim(), pages = Math.min(10, +$('#mpg').value||1), num = i => $(i).value==='' ? null : +$(i).value;
+    let items = [], cur = '';
+    for (let i=0;i<pages;i++){
+      const r = await retry(() => api('catalog',`/v1/search/items/details?Keyword=${encodeURIComponent(q)}&SortType=${$('#ms').value}&SortAggregation=5&Limit=30&IncludeNotForSale=${$('#mn').checked}${cur?'&cursor='+encodeURIComponent(cur):''}`), 3);
+      items.push(...(r.data||[])); cur = r.nextPageCursor; if (!cur) break;
+    }
+    const pr = g => g.lowestPrice ?? g.price ?? 0, rs = $('#mr').value, ty = $('#mt').value, a = num('#pmin'), b = num('#pmax'), f = num('#fmin'), p = num('#bmin');
+    items = items.filter(g => { const r = g.itemRestrictions||[];
+      return (!rs || (rs==='reg' ? !r.length : r.includes(rs))) && (!ty || String(g.assetType)===ty) && (a==null || pr(g)>=a) && (b==null || pr(g)<=b) && (f==null || (g.favoriteCount||0)>=f) && (p==null || (g.purchaseCount||0)>=p); });
+    const th = {}, ids = items.filter(g => g.itemType==='Asset').map(g=>g.id);
+    for (let i=0;i<ids.length;i+=100){ try{ (await api('thumbnails',`/v1/assets?assetIds=${ids.slice(i,i+100).join()}&size=150x150&format=Png`)).data.forEach(x => th[x.targetId] = x.imageUrl); }catch{} }
+    const kind = g => { const r = g.itemRestrictions||[]; return r.includes('LimitedUnique')?'LimitedU':r.includes('Limited')?'Limited':r.includes('Collectible')?'Collectible':'обычный'; };
+    const price = g => g.lowestPrice!=null ? 'R$ '+fmt(g.lowestPrice) : g.price!=null ? 'R$ '+fmt(g.price) : esc(g.priceStatus||'—');
+    box.innerHTML = panel('РЕЗУЛЬТАТ', `найдено: ${items.length}`, items.length ? `<div class="tw"><table><thead><tr><th></th><th>ПРЕДМЕТ</th><th>РЕДКОСТЬ</th><th>ЦЕНА</th><th>ПОКУПКИ</th><th>ФАВОРИТЫ</th><th>СОЗДАТЕЛЬ</th><th></th></tr></thead><tbody>`+
+      items.map(g => `<tr class="clk" onclick="window.open('https://www.roblox.com/${g.itemType==='Bundle'?'bundles':'catalog'}/${g.id}','_blank')"><td><img class="ico" src="${esc(th[g.id]||'')}" alt=""></td><td>${esc(g.name)}</td><td>${kind(g)}</td><td>${price(g)}</td><td>${fmt(g.purchaseCount)}</td><td>${fmt(g.favoriteCount)}</td><td>${esc(g.creatorName||'—')}</td>
+        <td>${kind(g)!=='обычный'?`<button class="sm" onclick="event.stopPropagation();rapOf(${g.id},this)">RAP</button>`:''}</td></tr>`).join('')+`</tbody></table></div>` : '<div class="msg">Ничего не найдено. Ослабьте фильтры или увеличьте число страниц.</div>');
+  }catch(e){ errBox(box, e.message); }
+}
+async function rapOf(id, el){
+  el.disabled = true;
+  try{ const r = await api('economy',`/v1/assets/${id}/resale-data`); el.parentNode.innerHTML = `<div>RAP ${fmt(r.recentAveragePrice)}<br>${fmt(r.numberRemaining)}/${fmt(r.assetStock)}</div>`; }
+  catch{ el.disabled = false; toast('Не удалось получить RAP'); }
+}
+
+route();
+</script>
+</body>
+</html>
